@@ -1,14 +1,29 @@
-import express    from 'express';
+require('dotenv').config();
 
-const articleInfo = {
-  'learn-react'           : { upvotes: 0, comments: [] },
-  'learn-node'            : { upvotes: 0, comments: [] },
-  'my-thoughts-on-resumes': { upvotes: 0, comments: [] },
-}
+import express    from 'express';
+import { MongoClient } from 'mongodb';
+
+// Mongodb authentication
+const mongoUser     = process.env.MONGO_INITDB_ROOT_USERNAME;
+const mongoPassword = process.env.MONGO_INITDB_ROOT_PASSWORD;
 
 const app = express();
-
 app.use(express.json());
+
+app.get('/api/articles/:name', async (req, res) => {
+  try {
+    const articleName = req.params.name;
+    const client = await MongoClient.connect(`mongodb://${mongoUser}:${mongoPassword}@localhost:27017`, { useNewUrlParser: true });
+    const db = client.db('my-blog');
+    const articleInfo = await db.collection('articles').findOne({name: articleName});
+  
+    res.status(200).json(articleInfo);
+  } catch (error) {
+    res.status(500).json({ message: 'Error connecting to db', error });
+  } finally {
+    client.close();
+  }  
+});
 
 app.post( '/api/articles/:name/upvote', (req, res) => {
   const articleName = req.params.name;

@@ -3,8 +3,6 @@ require('dotenv').config();
 const { MongoClient } = require("mongodb");
 
 const articleInfo =require('./article-info.json');
-const user     = process.env.MONGO_INITDB_ROOT_USERNAME;
-const password = process.env.MONGO_INITDB_ROOT_PASSWORD; 
 
 // Connection URI with authentication
 const config = {
