@@ -10,3 +10,6 @@
 
 # Temporary folder
 temp
+
+# production
+build

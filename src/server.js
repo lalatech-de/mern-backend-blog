@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+import path from 'path';
+
 import express         from 'express';
 import { MongoClient } from 'mongodb';
 
@@ -8,6 +10,8 @@ const mongoUser     = process.env.MONGO_INITDB_ROOT_USERNAME;
 const mongoPassword = process.env.MONGO_INITDB_ROOT_PASSWORD;
 
 const app = express();
+
+app.use(express.static(path.join(__dirname, '/build')))
 app.use(express.json());
 
 const withDB = async (operations, res) => {
@@ -53,6 +57,10 @@ app.post('/api/articles/:name/add-comment', (req, res) => {
     const updatedArticleInfo = await articles.findOne({ name: articleName });
     res.status(200).json(updatedArticleInfo);
   }, res);
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/build/index.html'));
 });
 
 app.listen('8000', console.log('Listening on port 8000'));
